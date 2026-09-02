@@ -21,6 +21,7 @@
     }
   });
   localStorage.setItem(storageKey, JSON.stringify(seen));
+  container.hidden = container.querySelectorAll(".deadline-alert:not([hidden])").length === 0;
 })();
 </script>{% endif %}{% endif %}
 <h2>Members</h2><p class="meta">{% for membership in members %}{{ membership.user.persona.display_name|default:membership.user.username }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>

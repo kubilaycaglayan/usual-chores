@@ -313,6 +313,10 @@ class HouseholdInsightTests(TestCase):
             f'usual-chores:deadline-alerts:user-{self.sam.pk}',
         )
         self.assertContains(response, "localStorage.getItem")
+        self.assertContains(
+            response,
+            'container.hidden = container.querySelectorAll(".deadline-alert:not([hidden])").length === 0',
+        )
 
 
 class DemoSeedIntegrationTests(TestCase):
