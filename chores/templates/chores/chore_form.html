@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ view.object|yesno:"Edit chore,Add chore" }} · Usual Chores{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'chores:list' %}">← Back to chores</a></p>
+<h1>{% if object %}Edit chore{% else %}Add chore{% endif %}</h1>
+<form method="post" class="form-card">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="button" type="submit">Save chore</button>
+</form>
+{% endblock %}

@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
+import calendar
+from datetime import timedelta
+
+from django.db import models, transaction
 from django.utils import timezone
 
 
@@ -54,3 +57,62 @@ class Chore(models.Model):
         if not self.is_completed:
             self.is_completed = True
             self.completed_at = timezone.now()
+
+    def complete(self, user=None):
+        """Complete this occurrence and create the next recurring occurrence."""
+        if self.is_completed:
+            return None
+
+        with transaction.atomic():
+            self.mark_complete()
+            self.save(update_fields=["is_completed", "completed_at", "updated_at"])
+            CompletionHistory.objects.create(
+                chore=self,
+                completed_by=user,
+                completed_at=self.completed_at,
+            )
+
+            if self.recurrence == self.Recurrence.NONE or self.due_date is None:
+                return None
+
+            next_due = self.next_due_date()
+            return Chore.objects.create(
+                name=self.name,
+                description=self.description,
+                recurrence=self.recurrence,
+                due_date=next_due,
+                created_by=self.created_by,
+                assigned_to=self.assigned_to,
+            )
+
+    def next_due_date(self):
+        if self.due_date is None:
+            return None
+        if self.recurrence == self.Recurrence.DAILY:
+            return self.due_date + timedelta(days=1)
+        if self.recurrence == self.Recurrence.WEEKLY:
+            return self.due_date + timedelta(weeks=1)
+        if self.recurrence == self.Recurrence.MONTHLY:
+            month = self.due_date.month % 12 + 1
+            year = self.due_date.year + (self.due_date.month // 12)
+            day = min(self.due_date.day, calendar.monthrange(year, month)[1])
+            return self.due_date.replace(year=year, month=month, day=day)
+        return None
+
+
+class CompletionHistory(models.Model):
+    chore = models.ForeignKey(Chore, on_delete=models.CASCADE, related_name="completion_history")
+    completed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="chore_completions",
+    )
+    completed_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["-completed_at"]
+
+    def __str__(self):
+        return f"{self.chore} completed at {self.completed_at:%Y-%m-%d %H:%M}"

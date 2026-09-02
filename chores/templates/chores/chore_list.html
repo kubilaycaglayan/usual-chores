@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Usual Chores{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Household rhythm</p>
+    <h1>Usual Chores</h1>
+  </div>
+  {% if user.is_authenticated %}<a class="button" href="{% url 'chores:create' %}">Add chore</a>{% endif %}
+</header>
+
+{% if messages %}
+  {% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}
+{% endif %}
+
+{% if chores %}
+<section class="chore-grid" aria-label="Upcoming incomplete chores">
+  {% for chore in chores %}
+  <article class="chore-card{% if chore.due_date and chore.due_date < now %} overdue{% endif %}">
+    <div class="card-top"><span class="badge">{{ chore.get_recurrence_display }}</span>{% if chore.due_date and chore.due_date < now %}<span class="overdue-label">Overdue</span>{% endif %}</div>
+    <h2>{{ chore.name }}</h2>
+    {% if chore.description %}<p>{{ chore.description }}</p>{% endif %}
+    <p class="meta">{% if chore.due_date %}Due {{ chore.due_date|date:"M j, Y · g:i A" }}{% else %}No due date{% endif %}</p>
+    {% if chore.assigned_to %}<p class="meta">Assigned to {{ chore.assigned_to.get_full_name|default:chore.assigned_to.username }}</p>{% endif %}
+    {% if user == chore.created_by or user == chore.assigned_to %}
+    <div class="actions"><a href="{% url 'chores:edit' chore.pk %}">Edit</a><form method="post" action="{% url 'chores:complete' chore.pk %}">{% csrf_token %}<button type="submit">Mark complete</button></form></div>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+{% else %}<p class="empty-state">No incomplete chores yet. Enjoy the calm—or add one.</p>{% endif %}
+{% endblock %}
