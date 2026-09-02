@@ -9,11 +9,11 @@ from chores.models import Chore, CompletionHistory, Household, HouseholdMembersh
 
 
 HOUSEHOLDS = {
-    "scientists-house": ("Scientists House", ["Einstein", "Marie Curie", "Newton", "Tesla", "Darwin", "Feynman"], [
+    "scientists-house": ("Scientists House", ["Einstein", "Marie Curie", "Newton", "Tesla", "Darwin", "Feynman", "Galileo", "Kepler"], [
         "Clean the laboratory", "Organize experiment notes", "Wash the glassware", "Restock chalk", "Take out radioactive waste", "Prepare coffee for the morning discussion", "Calibrate the telescope", "Sort the journals", "Water the greenhouse", "Check the safety equipment",
     ]),
-    "movie-directors-house": ("Movie Directors House", ["Kubrick", "Spielberg", "Scorsese", "Tarantino", "Coppola", "Hitchcock"], [
-        "Organize the screening room", "Clean camera equipment", "Prepare movie-night snacks", "Sort the Blu-ray collection", "Take out trash after screening", "Vacuum the editing room", "Label the film reels", "Charge the microphones", "Dust the storyboards", "Book the projector repair",
+    "movie-directors-house": ("Movie Directors House", ["Bong Joon Ho", "Alberto Rodríguez", "David Fincher", "Tobias Lindholm", "Park Chan-wook", "Denis Villeneuve", "Na Hong-jin", "Grant Singer", "Guillaume Canet"], [
+        "Shoot Memories of Murder scene", "Shoot Marshland scene", "Edit the film footage", "Shoot The Game"
     ]),
     "writers-house": ("Writers House", ["Dostoevsky", "Virginia Woolf", "Kafka", "Orwell", "Tolstoy", "Hemingway"], [
         "Organize the library", "Make coffee", "Clean writing desks", "Water the plants", "Buy printer paper", "Take out recycling", "Sharpen the pencils", "File the manuscripts", "Air the reading room", "Check the dictionaries",
