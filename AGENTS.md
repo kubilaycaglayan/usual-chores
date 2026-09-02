@@ -1,0 +1,2 @@
+- Always keep the README up to date with how to run instructions
+- Commit regularly and semantically
