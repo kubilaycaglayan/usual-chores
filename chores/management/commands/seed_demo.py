@@ -23,6 +23,10 @@ HOUSEHOLDS = {
     ]),
 }
 
+DEMO_LOGIN_USERNAME = "demo_movie-directors-house_1"
+DEMO_LOGIN_EMAIL = "demo-director@example.com"
+DEMO_LOGIN_PASSWORD = "usual-chores-director"
+
 
 class Command(BaseCommand):
     help = "Create deterministic, idempotent themed households for development."
@@ -40,8 +44,13 @@ class Command(BaseCommand):
             for index, display_name in enumerate(people):
                 username = f"demo_{slug}_{index + 1}"
                 user, _ = User.objects.get_or_create(username=username, defaults={"email": f"{username}@example.com"})
-                user.set_unusable_password()
-                user.save(update_fields=("password",))
+                if username == DEMO_LOGIN_USERNAME:
+                    user.email = DEMO_LOGIN_EMAIL
+                    user.set_password(DEMO_LOGIN_PASSWORD)
+                    user.save(update_fields=("email", "password"))
+                else:
+                    user.set_unusable_password()
+                    user.save(update_fields=("password",))
                 Persona.objects.update_or_create(user=user, defaults={"display_name": display_name, "theme": name, "seeded": True})
                 HouseholdMembership.objects.get_or_create(household=household, user=user)
             members = list(household.memberships.order_by("user_id").values_list("user_id", flat=True))

@@ -8,7 +8,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .management.commands.seed_demo import HOUSEHOLDS
+from .management.commands.seed_demo import (
+    DEMO_LOGIN_PASSWORD,
+    DEMO_LOGIN_USERNAME,
+    HOUSEHOLDS,
+)
 from .models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
 
 
@@ -244,6 +248,18 @@ class DemoSeedIntegrationTests(TestCase):
         self.assertIn("Seeded 4 households", first_output.getvalue())
         self.assertIn("Seeded 4 households", second_output.getvalue())
         self.assertTrue(Persona.objects.filter(display_name="Einstein").exists())
+
+    def test_seeded_director_account_can_log_in_and_is_shown_on_login_page(self):
+        management.call_command("seed_demo", stdout=StringIO())
+
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, DEMO_LOGIN_USERNAME)
+        self.assertContains(response, DEMO_LOGIN_PASSWORD)
+        self.assertTrue(self.client.login(username=DEMO_LOGIN_USERNAME, password=DEMO_LOGIN_PASSWORD))
+        self.assertEqual(self.client.session["_auth_user_id"], str(
+            get_user_model().objects.get(username=DEMO_LOGIN_USERNAME).pk
+        ))
 
 
 class AdminIntegrationTests(TestCase):

@@ -36,6 +36,14 @@ Development admin credentials:
 These credentials are for local development only. Change the password or use
 `createsuperuser` before deploying anywhere.
 
+Demo application credentials (also shown on the login page):
+
+- Username: `demo_movie-directors-house_1`
+- Password: `usual-chores-director`
+
+The demo account is the seeded Movie Directors household's first persona and
+can be used to try authenticated chore actions.
+
 Start the development server:
 
 ```bash
