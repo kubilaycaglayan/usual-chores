@@ -1,14 +1,3 @@
-# usual-chores
-
-Usual Chores is a simple tool for organizing recurring household tasks.
-
-## Status
-
-The application supports public households, seeded personas, member-managed
-chores, open/claimed/done statuses, recurring occurrences, completion history,
-contribution statistics, and fairness recommendations. See
-[_docs/backlog.md](_docs/backlog.md) for the implementation backlog.
-
 ## How to run
 
 Prerequisites:
