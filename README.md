@@ -27,23 +27,6 @@ The database migrations automatically create the development admin account and
 the four deterministic themed demo households, so the complete development
 dataset is ready immediately after setup.
 
-Development admin credentials:
-
-- Username: `admin`
-- Password: `usual-chores-admin`
-- Admin URL: <http://127.0.0.1:8000/admin/>
-
-These credentials are for local development only. Change the password or use
-`createsuperuser` before deploying anywhere.
-
-Demo application credentials (also shown on the login page):
-
-- Username: `bong-joon-ho`
-- Password: `usual-chores-director`
-
-The demo account is the seeded Movie Directors household's first persona and
-can be used to try authenticated chore actions.
-
 Start the development server:
 
 ```bash
@@ -61,6 +44,23 @@ Open <http://127.0.0.1:8000/> to view chores. The available pages are:
 - `/accounts/signup/` — create an account and sign in
 - `/accounts/logout/` — sign out and return to the application homepage (submitted by the **Sign out** button)
 - `/admin/` — manage users, chores, and completion history
+
+Development admin credentials:
+
+- Username: `admin`
+- Password: `usual-chores-admin`
+- Admin URL: <http://127.0.0.1:8000/admin/>
+
+These credentials are for local development only. Change the password or use
+`createsuperuser` before deploying anywhere.
+
+Demo application credentials (also shown on the login page):
+
+- Username: `bong-joon-ho`
+- Password: `usual-chores-director`
+
+The demo account is the seeded Movie Directors household's first persona and
+can be used to try authenticated chore actions.
 
 Sign in at `/accounts/login/` or `/admin/` before using the authenticated
 create, edit, or complete actions in the chore interface.
