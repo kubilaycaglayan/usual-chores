@@ -85,7 +85,7 @@ class ChoreViewTests(TestCase):
 
         response = self.client.post(reverse("logout"))
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse("chores:list"))
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_logout_requires_post(self):

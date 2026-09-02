@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -38,6 +38,13 @@ def sign_up(request):
         "registration/signup.html",
         {"form": form, "next": request.POST.get("next") or request.GET.get("next", "")},
     )
+
+
+@require_POST
+def sign_out(request):
+    logout(request)
+    messages.success(request, "Signed out.")
+    return redirect("chores:list")
 
 
 class ChoreListView(ListView):

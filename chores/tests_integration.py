@@ -38,8 +38,12 @@ class AccountWorkflowTests(TestCase):
 
         logout_response = self.client.post(reverse("logout"))
 
-        self.assertEqual(logout_response.status_code, 200)
+        self.assertEqual(logout_response.status_code, 302)
+        self.assertEqual(logout_response["Location"], reverse("chores:list"))
         self.assertFalse(logout_response.wsgi_request.user.is_authenticated)
+        homepage_after_logout = self.client.get(logout_response["Location"])
+        self.assertContains(homepage_after_logout, "Signed out.")
+        self.assertNotContains(homepage_after_logout, "Django administration")
 
 
 class HouseholdWorkflowTests(TestCase):
