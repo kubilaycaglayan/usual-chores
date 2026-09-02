@@ -108,7 +108,10 @@ class HouseholdDetailView(ListView):
         counts = CompletionHistory.objects.filter(chore__household=household).values("completed_by__username").annotate(completed_count=Count("id")).order_by("completed_count", "completed_by__username")
         context["stats"] = counts
         context["recommendations"] = self.get_queryset().filter(is_completed=False, claimed_by__isnull=True).order_by("due_date", "name")[:3]
-        context["is_member"] = household.memberships.filter(user=self.request.user).exists()
+        context["is_member"] = (
+            self.request.user.is_authenticated
+            and household.memberships.filter(user=self.request.user).exists()
+        )
         context["deadline_alerts"] = self.get_queryset().filter(is_completed=False, claimed_by__isnull=False, due_date__lte=timezone.now() + timedelta(days=2)).order_by("due_date")
         return context
 

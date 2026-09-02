@@ -61,7 +61,12 @@ Run the Django system checks and automated tests with:
 ```bash
 uv run python manage.py check
 uv run python manage.py test
+uv run python manage.py test chores.tests_integration
 ```
+
+The full test command includes the integration tests; the final command runs
+the integration tests alone when iterating on household, claiming, insights,
+or demo-seed behavior.
 
 The demo data is installed automatically by `migrate` and is deterministic and
 idempotent. The `seed_demo` management command remains available if you need to
