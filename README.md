@@ -23,12 +23,9 @@ uv sync
 uv run python manage.py migrate
 ```
 
-Seed the development admin account so you can sign in to Django admin and
-manage users, chores, and completion history:
-
-```bash
-uv run python manage.py seed_admin
-```
+The database migration automatically creates the development admin account so
+you can sign in to Django admin and manage users, chores, and completion
+history.
 
 Development admin credentials:
 
