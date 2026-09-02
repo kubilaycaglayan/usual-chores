@@ -329,6 +329,8 @@ class DemoSeedIntegrationTests(TestCase):
         self.assertTrue(Persona.objects.filter(display_name="Albert Einstein").exists())
         self.assertTrue(get_user_model().objects.filter(username="albert-einstein").exists())
         self.assertFalse(get_user_model().objects.filter(username__startswith="demo_").exists())
+        self.assertTrue(Household.objects.filter(name="🎬 Movie Directors House 🌟").exists())
+        self.assertTrue(Household.objects.filter(name="💻 Computer Scientists House 🤖").exists())
 
     def test_seeded_director_account_can_log_in_and_is_shown_on_login_page(self):
         management.call_command("seed_demo", stdout=StringIO())

@@ -79,4 +79,9 @@ or demo-seed behavior.
 
 The demo data is installed automatically by `migrate` and is deterministic and
 idempotent. The `seed_demo` management command remains available if you need to
-restore the demo dataset manually.
+restore the demo dataset manually. To reset and refresh all seeded households,
+personas, and users during development, run:
+
+```bash
+uv run python manage.py seed_demo --reset
+```

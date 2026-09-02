@@ -15,16 +15,16 @@ from chores.demo_credentials import (
 
 
 HOUSEHOLDS = {
-    "scientists-house": ("Scientists House", ["Albert Einstein", "Marie Curie", "Isaac Newton", "Nikola Tesla", "Charles Darwin", "Richard Feynman", "Galileo Galilei", "Johannes Kepler"], [
+    "scientists-house": ("🔬 Scientists House 🧪", ["Albert Einstein", "Marie Curie", "Isaac Newton", "Nikola Tesla", "Charles Darwin", "Richard Feynman", "Galileo Galilei", "Johannes Kepler"], [
         "Clean the laboratory", "Organize experiment notes", "Wash the glassware", "Restock chalk", "Take out radioactive waste", "Prepare coffee for the morning discussion", "Calibrate the telescope", "Sort the journals", "Water the greenhouse", "Check the safety equipment",
     ]),
-    "movie-directors-house": ("Movie Directors House", ["Bong Joon Ho", "Alberto Rodríguez", "David Fincher", "Tobias Lindholm", "Park Chan-wook", "Denis Villeneuve", "Na Hong-jin", "Grant Singer", "Guillaume Canet"], [
+    "movie-directors-house": ("🎬 Movie Directors House 🌟", ["Bong Joon Ho", "Alberto Rodríguez", "David Fincher", "Tobias Lindholm", "Park Chan-wook", "Denis Villeneuve", "Na Hong-jin", "Grant Singer", "Guillaume Canet"], [
         "Shoot Memories of Murder scene", "Shoot Marshland scene", "Edit the film footage", "Shoot The Game"
     ]),
-    "writers-house": ("Writers House", ["Fyodor Dostoevsky", "Virginia Woolf", "Franz Kafka", "George Orwell", "Leo Tolstoy", "Ernest Hemingway"], [
+    "writers-house": ("📚 Writers House ✍️", ["Fyodor Dostoevsky", "Virginia Woolf", "Franz Kafka", "George Orwell", "Leo Tolstoy", "Ernest Hemingway"], [
         "Organize the library", "Make coffee", "Clean writing desks", "Water the plants", "Buy printer paper", "Take out recycling", "Sharpen the pencils", "File the manuscripts", "Air the reading room", "Check the dictionaries",
     ]),
-    "computer-scientists-house": ("Computer Scientists House", ["Alan Turing", "Ada Lovelace", "Donald Knuth", "Grace Hopper", "Edsger Dijkstra", "Margaret Hamilton"], [
+    "computer-scientists-house": ("💻 Computer Scientists House 🤖", ["Alan Turing", "Ada Lovelace", "Donald Knuth", "Grace Hopper", "Edsger Dijkstra", "Margaret Hamilton"], [
         "Restart the router", "Organize cables", "Clean keyboards", "Back up the household server", "Empty the coffee machine", "Update the shared shopping list", "Patch the home lab", "Label the spare hardware", "Review the backups", "Recycle old batteries",
     ]),
 }
@@ -35,11 +35,22 @@ LEGACY_DEMO_LOGIN_USERNAME = "demo_movie-directors-house_1"
 class Command(BaseCommand):
     help = "Create deterministic, idempotent themed households for development."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--reset",
+            action="store_true",
+            help="Delete the existing seeded households and users before reseeding.",
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
         User = get_user_model()
         base_time = timezone.make_aware(datetime(2026, 1, 15, 12, 0))
         created = 0
+        if options["reset"]:
+            Household.objects.filter(slug__in=HOUSEHOLDS).delete()
+            User.objects.filter(persona__seeded=True).delete()
+            User.objects.filter(username__startswith="demo_").delete()
         legacy_user = User.objects.filter(username=LEGACY_DEMO_LOGIN_USERNAME).first()
         if legacy_user and not User.objects.filter(username=DEMO_LOGIN_USERNAME).exists():
             legacy_user.username = DEMO_LOGIN_USERNAME
