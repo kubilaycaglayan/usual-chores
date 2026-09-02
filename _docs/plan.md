@@ -1,22 +1,27 @@
-# Plan
+# PLAN
 
-## Goal
-
-Build a small, easy-to-use application for tracking recurring household chores.
-
-## Initial milestones
-
-1. Define the core workflow: create chores, assign them, set recurrence, and mark them complete.
-2. Choose the application stack and establish a small, testable project structure.
-3. Design the data model for chores, users, schedules, and completion history.
-4. Implement the first usable flow for viewing upcoming chores and recording completions.
-5. Add validation, error handling, and tests for the core behavior.
-6. Document local setup, configuration, and common development commands.
-7. Review usability and prepare the project for its first release.
-
-## Principles
-
-- Keep the first version focused on the recurring-task workflow.
-- Prefer simple defaults and low-friction interaction.
-- Keep business logic independent from the user interface where practical.
-- Add features only after the core workflow is reliable.
+- Standard user accounts
+- Users can join multiple households
+- All households are public and discoverable
+- Anyone can create a household
+- Maximum 10 members per household
+- Seeded themed households, e.g. Scientists, Movie Directors
+- Seeded famous-person personas remain alongside real users
+- Any household member can create/edit chores
+- Chores are claim-based
+- One person can claim a chore at a time
+- Claimed chores can be unclaimed only before the deadline
+- Statuses: Open → Claimed → Done
+- One-off and recurring chores
+- Recurrence uses fixed schedules
+- Completing a recurring chore automatically creates the next occurrence
+- Chore fields: title, description, optional deadline, optional recurrence
+- Overdue chores are highlighted
+- Web-page alerts for claimed chores approaching or passing deadline
+- Full completion history persisted in DB
+- Fairness = number of completed chores
+- All chores count equally
+- Show contribution stats
+- Transparently recommend chores to members with lower contribution
+- No comments, attachments, categories, or tags
+- All application data persisted in the database
