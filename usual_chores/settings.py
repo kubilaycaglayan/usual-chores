@@ -51,6 +51,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'usual_chores.urls'
+LOGIN_REDIRECT_URL = '/'
 
 TEMPLATES = [
     {
