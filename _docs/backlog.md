@@ -4,13 +4,13 @@ A small, prioritized backlog for building Usual Chores with Django.
 
 ## MVP
 
-### task-1 — Create the `chores` Django app
+### task-1 — Create the `chores` Django app ✅
 
 Run `uv run python manage.py startapp chores` and add `chores` to `INSTALLED_APPS`.
 
 **Done when:** Django recognizes the app and `uv run python manage.py check` passes.
 
-### task-2 — Define the chore model
+### task-2 — Define the chore model ✅
 
 Create a `Chore` model with a name, description, recurrence, due date, completion status, and timestamps.
 
