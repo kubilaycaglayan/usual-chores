@@ -80,6 +80,21 @@ class ChoreViewTests(TestCase):
         self.assertTrue(get_user_model().objects.filter(username="new-user").exists())
         self.assertTrue(response.wsgi_request.user.is_authenticated)
 
+    def test_authenticated_user_can_sign_out(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("logout"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_logout_requires_post(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)
+
     def test_login_page_links_to_sign_up(self):
         response = self.client.get(reverse("login"))
 

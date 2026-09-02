@@ -16,6 +16,32 @@ from .management.commands.seed_demo import HOUSEHOLDS
 from .models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
 
 
+class AccountWorkflowTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="alex", password="test-pass-123"
+        )
+
+    def test_authenticated_user_can_sign_out_from_the_application(self):
+        login_response = self.client.post(
+            reverse("login"),
+            {"username": "alex", "password": "test-pass-123"},
+        )
+        self.assertRedirects(login_response, reverse("chores:list"))
+
+        homepage = self.client.get(reverse("chores:list"))
+        self.assertContains(
+            homepage,
+            '<form method="post" action="/accounts/logout/"',
+            html=False,
+        )
+
+        logout_response = self.client.post(reverse("logout"))
+
+        self.assertEqual(logout_response.status_code, 200)
+        self.assertFalse(logout_response.wsgi_request.user.is_authenticated)
+
+
 class HouseholdWorkflowTests(TestCase):
     def setUp(self):
         user_model = get_user_model()

@@ -59,7 +59,7 @@ Open <http://127.0.0.1:8000/> to view chores. The available pages are:
 - `/new/` — create a chore (requires authentication)
 - `/accounts/login/` — sign in to the application
 - `/accounts/signup/` — create an account and sign in
-- `/accounts/logout/` — sign out of the application
+- `/accounts/logout/` — sign out of the application (submitted by the **Sign out** button)
 - `/admin/` — manage users, chores, and completion history
 
 Sign in at `/accounts/login/` or `/admin/` before using the authenticated
