@@ -23,11 +23,21 @@ uv sync
 uv run python manage.py migrate
 ```
 
-Create an admin account so you can sign in to Django admin and manage users:
+Seed the development admin account so you can sign in to Django admin and
+manage users, chores, and completion history:
 
 ```bash
-uv run python manage.py createsuperuser
+uv run python manage.py seed_admin
 ```
+
+Development admin credentials:
+
+- Username: `admin`
+- Password: `usual-chores-admin`
+- Admin URL: <http://127.0.0.1:8000/admin/>
+
+These credentials are for local development only. Change the password or use
+`createsuperuser` before deploying anywhere.
 
 Start the development server:
 
