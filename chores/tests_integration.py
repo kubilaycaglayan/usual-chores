@@ -294,6 +294,26 @@ class HouseholdInsightTests(TestCase):
         self.assertTrue(overdue.is_overdue)
         self.assertFalse(soon.is_overdue)
 
+    def test_deadline_alerts_are_tracked_once_per_logged_in_user_in_local_storage(self):
+        alert = Chore.objects.create(
+            name="One-time deadline alert",
+            household=self.household,
+            due_date=timezone.now() + timedelta(hours=1),
+            claimed_by=self.sam,
+        )
+        self.client.force_login(self.sam)
+
+        response = self.client.get(
+            reverse("chores:household", args=[self.household.slug])
+        )
+
+        self.assertContains(response, f'data-alert-id="{alert.pk}"')
+        self.assertContains(
+            response,
+            f'usual-chores:deadline-alerts:user-{self.sam.pk}',
+        )
+        self.assertContains(response, "localStorage.getItem")
+
 
 class DemoSeedIntegrationTests(TestCase):
     def test_seed_demo_creates_expected_idempotent_dataset(self):
