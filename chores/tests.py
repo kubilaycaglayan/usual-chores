@@ -62,6 +62,14 @@ class ChoreViewTests(TestCase):
         self.assertRedirects(response, reverse("chores:list"))
         self.assertEqual(Chore.objects.get().created_by, self.user)
 
+    def test_user_can_sign_in_through_application_login(self):
+        response = self.client.post(
+            reverse("login"),
+            {"username": "alex", "password": "test-pass-123"},
+        )
+
+        self.assertRedirects(response, reverse("chores:list"))
+
     def test_only_owner_or_assignee_can_edit_or_complete(self):
         chore = Chore.objects.create(name="Private edit", created_by=self.user)
         self.client.force_login(self.other_user)

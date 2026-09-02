@@ -59,3 +59,50 @@ Calculate the next due date when a recurring chore is completed.
 ### task-10 — Improve the interface ✅
 
 Add navigation, empty states, responsive styling, and clear feedback messages.
+
+## Plan follow-ups
+
+The following items are tracked from [_docs/plan.md](_docs/plan.md) and are not
+part of the initial MVP.
+
+### task-11 — Add application authentication ✅
+
+Provide login and logout pages so users can use the authenticated chore actions
+without relying on the Django admin.
+
+### task-12 — Add households and membership
+
+Allow users to create and join public, discoverable households with a maximum
+of ten members.
+
+### task-13 — Add household personas and seed data
+
+Support seeded themed households and famous-person personas alongside real
+users.
+
+### task-14 — Add claim-based chore statuses
+
+Implement Open → Claimed → Done states, one claimant at a time, and household
+member access to create and edit chores.
+
+### task-15 — Add chore claiming and unclaiming
+
+Allow members to claim chores and unclaim them only before the deadline.
+
+### task-16 — Add deadline alerts
+
+Highlight overdue chores and show page alerts for claimed chores approaching or
+past their deadline.
+
+### task-17 — Add contribution statistics
+
+Show each member’s completed-chore count and transparently recommend chores to
+members with lower contributions.
+
+### task-18 — Add deterministic themed demo data
+
+After the household, claiming, and statistics features are available, add
+idempotent deterministic seed data for themed public households, persona
+members, themed chores, recurring occurrences, deadlines, claims, and
+completion history. Follow the detailed requirements in
+[_docs/seed-data.md](_docs/seed-data.md).

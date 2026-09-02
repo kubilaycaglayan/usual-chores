@@ -46,9 +46,11 @@ Open <http://127.0.0.1:8000/> to view chores. The available pages are:
 
 - `/` — upcoming incomplete chores
 - `/new/` — create a chore (requires authentication)
+- `/accounts/login/` — sign in to the application
+- `/accounts/logout/` — sign out of the application
 - `/admin/` — manage users, chores, and completion history
 
-Sign in at `/admin/` with the superuser account before using the authenticated
+Sign in at `/accounts/login/` or `/admin/` before using the authenticated
 create, edit, or complete actions in the chore interface.
 
 Run the Django system checks and automated tests with:
