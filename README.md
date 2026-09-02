@@ -58,6 +58,7 @@ Open <http://127.0.0.1:8000/> to view chores. The available pages are:
 - `/households/<slug>/` — members, chores, alerts, statistics, and recommendations
 - `/new/` — create a chore (requires authentication)
 - `/accounts/login/` — sign in to the application
+- `/accounts/signup/` — create an account and sign in
 - `/accounts/logout/` — sign out of the application
 - `/admin/` — manage users, chores, and completion history
 

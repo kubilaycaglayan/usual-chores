@@ -1,19 +1,43 @@
 from datetime import timedelta
 
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.conf import settings
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, ListView, UpdateView
 
 from .forms import ChoreForm, HouseholdForm
 from .models import Chore, CompletionHistory, Household
+
+
+def sign_up(request):
+    if request.user.is_authenticated:
+        return redirect("chores:list")
+
+    form = UserCreationForm(request.POST or None)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        next_url = request.POST.get("next")
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        ):
+            return redirect(next_url)
+        return redirect("chores:list")
+    return render(
+        request,
+        "registration/signup.html",
+        {"form": form, "next": request.POST.get("next") or request.GET.get("next", "")},
+    )
 
 
 class ChoreListView(ListView):

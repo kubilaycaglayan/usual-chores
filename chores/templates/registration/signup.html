@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up · Usual Chores{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'login' %}">← Back to sign in</a></p>
+<h1>Sign up</h1>
+<p>Create an account to manage your household chores.</p>
+<form method="post" class="form-card">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    <p>
+      {{ field.label_tag }}
+      {{ field.errors }}
+      {{ field }}
+      {% if field.help_text %}<small>{{ field.help_text|safe }}</small>{% endif %}
+    </p>
+  {% endfor %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button class="button" type="submit">Create account</button>
+</form>
+{% endblock %}

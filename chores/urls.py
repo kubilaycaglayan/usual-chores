@@ -5,6 +5,7 @@ from . import views
 app_name = "chores"
 
 urlpatterns = [
+    path("accounts/signup/", views.sign_up, name="signup"),
     path("", views.ChoreListView.as_view(), name="list"),
     path("new/", views.ChoreCreateView.as_view(), name="create"),
     path("<int:pk>/edit/", views.ChoreUpdateView.as_view(), name="edit"),

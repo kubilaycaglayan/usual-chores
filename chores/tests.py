@@ -70,6 +70,21 @@ class ChoreViewTests(TestCase):
 
         self.assertRedirects(response, reverse("chores:list"))
 
+    def test_user_can_sign_up_and_is_signed_in(self):
+        response = self.client.post(
+            reverse("chores:signup"),
+            {"username": "new-user", "password1": "a-strong-password-123", "password2": "a-strong-password-123"},
+        )
+
+        self.assertRedirects(response, reverse("chores:list"))
+        self.assertTrue(get_user_model().objects.filter(username="new-user").exists())
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_login_page_links_to_sign_up(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, 'href="/accounts/signup/"')
+
     def test_only_owner_or_assignee_can_edit_or_complete(self):
         chore = Chore.objects.create(name="Private edit", created_by=self.user)
         self.client.force_login(self.other_user)

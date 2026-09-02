@@ -8,11 +8,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .management.commands.seed_demo import (
+from .demo_credentials import (
     DEMO_LOGIN_PASSWORD,
     DEMO_LOGIN_USERNAME,
-    HOUSEHOLDS,
 )
+from .management.commands.seed_demo import HOUSEHOLDS
 from .models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
 
 

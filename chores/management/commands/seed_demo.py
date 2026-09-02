@@ -6,6 +6,11 @@ from django.db import transaction
 from django.utils import timezone
 
 from chores.models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
+from chores.demo_credentials import (
+    DEMO_LOGIN_EMAIL,
+    DEMO_LOGIN_PASSWORD,
+    DEMO_LOGIN_USERNAME,
+)
 
 
 HOUSEHOLDS = {
@@ -23,9 +28,6 @@ HOUSEHOLDS = {
     ]),
 }
 
-DEMO_LOGIN_USERNAME = "bong-joon-ho"
-DEMO_LOGIN_EMAIL = "bong.joon.ho@example.com"
-DEMO_LOGIN_PASSWORD = "usual-chores-director"
 LEGACY_DEMO_LOGIN_USERNAME = "demo_movie-directors-house_1"
 
 
