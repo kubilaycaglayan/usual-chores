@@ -7,13 +7,35 @@
 <h1>Sign in</h1>
 <p>Try the demo application with the seeded Movie Director account:</p>
 <p>
-  <strong>Username:</strong> <code>demo_movie-directors-house_1</code><br>
+  <strong>Username:</strong> <code>bong-joon-ho</code><br>
   <strong>Password:</strong> <code>usual-chores-director</code>
 </p>
 <form method="post" class="form-card">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.non_field_errors }}
+  <p>
+    {{ form.username.label_tag }}
+    {{ form.username.errors }}
+    <input type="text" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'bong-joon-ho' }}" autofocus required id="{{ form.username.id_for_label }}">
+  </p>
+  <p>
+    {{ form.password.label_tag }}
+    {{ form.password.errors }}
+    <span style="display:flex;gap:.4rem">
+      <input style="flex:1" type="password" name="{{ form.password.html_name }}" value="{{ form.password.value|default:'usual-chores-director' }}" required id="{{ form.password.id_for_label }}">
+      <button type="button" id="password-toggle" aria-controls="{{ form.password.id_for_label }}">Show</button>
+    </span>
+  </p>
   <input type="hidden" name="next" value="{{ next }}">
   <button class="button" type="submit">Sign in</button>
 </form>
+<script>
+  const passwordInput = document.getElementById("{{ form.password.id_for_label }}");
+  const passwordToggle = document.getElementById("password-toggle");
+  passwordToggle.addEventListener("click", () => {
+    const showing = passwordInput.type === "text";
+    passwordInput.type = showing ? "password" : "text";
+    passwordToggle.textContent = showing ? "Show" : "Hide";
+  });
+</script>
 {% endblock %}

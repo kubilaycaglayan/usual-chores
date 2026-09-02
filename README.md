@@ -38,7 +38,7 @@ These credentials are for local development only. Change the password or use
 
 Demo application credentials (also shown on the login page):
 
-- Username: `demo_movie-directors-house_1`
+- Username: `bong-joon-ho`
 - Password: `usual-chores-director`
 
 The demo account is the seeded Movie Directors household's first persona and

@@ -23,9 +23,10 @@ HOUSEHOLDS = {
     ]),
 }
 
-DEMO_LOGIN_USERNAME = "demo_movie-directors-house_1"
-DEMO_LOGIN_EMAIL = "demo-director@example.com"
+DEMO_LOGIN_USERNAME = "bong-joon-ho"
+DEMO_LOGIN_EMAIL = "bong.joon.ho@example.com"
 DEMO_LOGIN_PASSWORD = "usual-chores-director"
+LEGACY_DEMO_LOGIN_USERNAME = "demo_movie-directors-house_1"
 
 
 class Command(BaseCommand):
@@ -36,13 +37,21 @@ class Command(BaseCommand):
         User = get_user_model()
         base_time = timezone.make_aware(datetime(2026, 1, 15, 12, 0))
         created = 0
+        legacy_user = User.objects.filter(username=LEGACY_DEMO_LOGIN_USERNAME).first()
+        if legacy_user and not User.objects.filter(username=DEMO_LOGIN_USERNAME).exists():
+            legacy_user.username = DEMO_LOGIN_USERNAME
+            legacy_user.save(update_fields=("username",))
         for slug, (name, people, chore_names) in HOUSEHOLDS.items():
             creator, _ = User.objects.get_or_create(username=f"demo_{slug}", defaults={"email": f"{slug}@example.com"})
             creator.set_unusable_password()
             creator.save(update_fields=("password",))
             household, _ = Household.objects.update_or_create(slug=slug, defaults={"name": name, "created_by": creator, "is_public": True})
             for index, display_name in enumerate(people):
-                username = f"demo_{slug}_{index + 1}"
+                username = (
+                    DEMO_LOGIN_USERNAME
+                    if display_name == "Bong Joon Ho"
+                    else f"demo_{slug}_{index + 1}"
+                )
                 user, _ = User.objects.get_or_create(username=username, defaults={"email": f"{username}@example.com"})
                 if username == DEMO_LOGIN_USERNAME:
                     user.email = DEMO_LOGIN_EMAIL
@@ -57,6 +66,8 @@ class Command(BaseCommand):
             for index, chore_name in enumerate(chore_names):
                 recurrence = Chore.Recurrence.WEEKLY if index == 0 else Chore.Recurrence.DAILY if index == 1 else Chore.Recurrence.NONE
                 due_date = base_time + timedelta(days=index - 6)
+                if index in (0, 1):
+                    due_date = base_time + timedelta(days=730 + index)
                 is_completed = index in (2, 3)
                 chore, made = Chore.objects.update_or_create(
                     household=household, name=chore_name,

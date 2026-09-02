@@ -252,14 +252,23 @@ class DemoSeedIntegrationTests(TestCase):
     def test_seeded_director_account_can_log_in_and_is_shown_on_login_page(self):
         management.call_command("seed_demo", stdout=StringIO())
 
-        response = self.client.get(reverse("login"))
-
-        self.assertContains(response, DEMO_LOGIN_USERNAME)
-        self.assertContains(response, DEMO_LOGIN_PASSWORD)
         self.assertTrue(self.client.login(username=DEMO_LOGIN_USERNAME, password=DEMO_LOGIN_PASSWORD))
         self.assertEqual(self.client.session["_auth_user_id"], str(
             get_user_model().objects.get(username=DEMO_LOGIN_USERNAME).pk
         ))
+
+    def test_login_form_prefills_credentials_and_has_show_password_toggle(self):
+        management.call_command("seed_demo", stdout=StringIO())
+
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, DEMO_LOGIN_USERNAME)
+        self.assertContains(response, DEMO_LOGIN_PASSWORD)
+        self.assertContains(response, 'name="username" value="bong-joon-ho"')
+        self.assertContains(response, 'type="password" name="password" value="usual-chores-director"')
+        self.assertContains(response, '<button type="button" id="password-toggle"')
+        self.assertContains(response, 'aria-controls="id_password"')
+        self.assertContains(response, "passwordInput.type = showing ? \"password\" : \"text\";")
 
 
 class AdminIntegrationTests(TestCase):
