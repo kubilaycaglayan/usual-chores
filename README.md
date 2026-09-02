@@ -21,12 +21,11 @@ Install the dependencies and initialize the database:
 ```bash
 uv sync
 uv run python manage.py migrate
-uv run python manage.py seed_demo
 ```
 
-The database migration automatically creates the development admin account so
-you can sign in to Django admin and manage users, chores, and completion
-history.
+The database migrations automatically create the development admin account and
+the four deterministic themed demo households, so the complete development
+dataset is ready immediately after setup.
 
 Development admin credentials:
 
@@ -64,5 +63,6 @@ uv run python manage.py check
 uv run python manage.py test
 ```
 
-`seed_demo` is deterministic and idempotent; run it again whenever you want to
-restore the four themed development households without creating duplicates.
+The demo data is installed automatically by `migrate` and is deterministic and
+idempotent. The `seed_demo` management command remains available if you need to
+restore the demo dataset manually.
