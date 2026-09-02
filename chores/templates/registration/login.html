@@ -6,10 +6,6 @@
 <p><a href="{% url 'chores:list' %}">← Back to chores</a></p>
 <h1>Sign in</h1>
 <p>Try the demo application with the seeded Movie Director account:</p>
-<p>
-  <strong>Username:</strong> <code>bong-joon-ho</code><br>
-  <strong>Password:</strong> <code>usual-chores-director</code>
-</p>
 <form method="post" class="form-card">
   {% csrf_token %}
   {{ form.non_field_errors }}
