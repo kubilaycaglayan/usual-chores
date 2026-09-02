@@ -19,7 +19,7 @@ class ChoreForm(forms.ModelForm):
 
     def __init__(self, *args, household=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["assigned_to"].queryset = get_user_model().objects.order_by("username")
+        self.fields["assigned_to"].queryset = get_user_model().objects.filter(is_staff=False).order_by("username")
         self.household = household
         self.fields["household"].required = False
 

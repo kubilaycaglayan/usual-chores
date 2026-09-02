@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ household.name }} · Usual Chores{% endblock %}
 {% block content %}
-<p><a href="{% url 'chores:households' %}">← All households</a></p><header class="page-header"><div><p class="eyebrow">Public household</p><h1>{{ household.name }}</h1></div>{% if user.is_authenticated and not is_member %}<form method="post" action="{% url 'chores:household-join' household.slug %}">{% csrf_token %}<button>Join household</button></form>{% endif %}</header>
+<p><a href="{% url 'chores:households' %}">← All households</a></p><header class="page-header"><div><p class="eyebrow">Public household</p><h1>{{ household.name }}</h1></div><div class="actions"><a class="button" href="{% url 'chores:create' %}">New chore</a>{% if user.is_authenticated and not is_member %}<form method="post" action="{% url 'chores:household-join' household.slug %}">{% csrf_token %}<button>Join household</button></form>{% endif %}</div></header>
 {% if messages %}{% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}{% endif %}
 {% if deadline_alerts %}<div class="message"><strong>Deadline alerts:</strong> {% for chore in deadline_alerts %}{{ chore.name }} is {% if chore.is_overdue %}overdue{% else %}due soon{% endif %}{% if not forloop.last %}; {% endif %}{% endfor %}</div>{% endif %}
 <h2>Members</h2><p class="meta">{% for membership in members %}{{ membership.user.persona.display_name|default:membership.user.username }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>

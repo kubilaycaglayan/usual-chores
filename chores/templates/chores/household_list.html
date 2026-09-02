@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Households · Usual Chores{% endblock %}
 {% block content %}
-<header class="page-header"><div><p class="eyebrow">Find your people</p><h1>Households</h1></div><a class="button" href="{% url 'chores:household-create' %}">Create household</a></header>
+<header class="page-header"><div><p class="eyebrow">Find your people</p><h1>Households</h1></div><div class="actions"><a class="button" href="{% url 'chores:create' %}">New chore</a><a class="button" href="{% url 'chores:household-create' %}">Create household</a></div></header>
 {% if messages %}{% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}{% endif %}
 <section class="chore-grid">{% for household in households %}<article class="chore-card"><h2><a href="{% url 'chores:household' household.slug %}">{{ household.name }}</a></h2><p class="meta">{{ household.memberships.count }} / 10 members</p><p>{{ household.chores.count }} chores</p></article>{% empty %}<p class="empty-state">No public households yet.</p>{% endfor %}</section>
 {% endblock %}

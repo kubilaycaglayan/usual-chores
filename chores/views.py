@@ -72,9 +72,8 @@ class ChoreCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         household = form.cleaned_data.get("household")
-        if household and not household.memberships.filter(user=self.request.user).exists():
-            form.add_error("household", "You must join a household before adding chores there.")
-            return self.form_invalid(form)
+        if household:
+            household.add_member(self.request.user)
         form.instance.household = household
         messages.success(self.request, "Chore created.")
         return super().form_valid(form)

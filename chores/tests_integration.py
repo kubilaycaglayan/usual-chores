@@ -18,9 +18,21 @@ from .models import Chore, CompletionHistory, Household, HouseholdMembership, Pe
 
 class AccountWorkflowTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user(
             username="alex", password="test-pass-123"
         )
+        self.admin = user_model.objects.create_superuser(
+            username="staff-admin", password="admin-pass-123", email="staff-admin@example.com"
+        )
+
+    def test_new_chore_form_does_not_offer_admin_users_for_assignment(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("chores:create"))
+
+        self.assertNotContains(response, 'value="%s"' % self.admin.pk)
+        self.assertNotContains(response, ">staff-admin</option>")
 
     def test_authenticated_user_can_sign_out_from_the_application(self):
         login_response = self.client.post(
@@ -109,6 +121,31 @@ class HouseholdWorkflowTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Chore.objects.filter(name="Unauthorized chore").exists())
+
+    def test_user_is_added_to_household_when_creating_its_chore(self):
+        self.client.force_login(self.outsider)
+
+        response = self.client.post(
+            reverse("chores:create"),
+            {"name": "Sweep porch", "recurrence": "none", "household": self.household.pk},
+        )
+
+        self.assertRedirects(response, reverse("chores:list"))
+        self.assertTrue(self.household.memberships.filter(user=self.outsider).exists())
+        self.assertTrue(
+            Chore.objects.filter(name="Sweep porch", household=self.household).exists()
+        )
+
+    def test_household_pages_show_new_chore_action(self):
+        self.client.force_login(self.member)
+
+        households = self.client.get(reverse("chores:households"))
+        detail = self.client.get(
+            reverse("chores:household", args=[self.household.slug])
+        )
+
+        self.assertContains(households, 'href="/new/"')
+        self.assertContains(detail, 'href="/new/"')
 
     def test_member_can_create_and_edit_household_chore(self):
         self.client.force_login(self.member)
