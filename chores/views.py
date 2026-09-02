@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Case, Count, IntegerField, Value, When
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -53,7 +53,19 @@ class ChoreListView(ListView):
     template_name = "chores/chore_list.html"
 
     def get_queryset(self):
-        return Chore.objects.filter(is_completed=False).select_related("assigned_to", "created_by")
+        queryset = Chore.objects.filter(is_completed=False).select_related("assigned_to", "created_by")
+        if self.request.user.is_authenticated:
+            queryset = queryset.order_by(
+                Case(
+                    When(assigned_to=self.request.user, then=Value(0)),
+                    default=Value(1),
+                    output_field=IntegerField(),
+                ),
+                "is_completed",
+                "due_date",
+                "name",
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

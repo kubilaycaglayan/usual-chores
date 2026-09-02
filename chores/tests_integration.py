@@ -190,6 +190,18 @@ class ChoreClaimingAndCompletionTests(TestCase):
         self.household.add_member(self.owner)
         self.household.add_member(self.member)
 
+    def test_assigned_chores_appear_first_for_the_assigned_user(self):
+        Chore.objects.create(name="A general task", household=self.household)
+        Chore.objects.create(
+            name="My assigned task", household=self.household, assigned_to=self.member
+        )
+        self.client.force_login(self.member)
+
+        response = self.client.get(reverse("chores:list"))
+        content = response.content.decode()
+
+        self.assertLess(content.index("My assigned task"), content.index("A general task"))
+
     def test_member_can_claim_and_unclaim_open_chore(self):
         chore = Chore.objects.create(name="Open task", household=self.household)
         self.client.force_login(self.member)
@@ -314,7 +326,9 @@ class DemoSeedIntegrationTests(TestCase):
         )
         self.assertIn("Seeded 4 households", first_output.getvalue())
         self.assertIn("Seeded 4 households", second_output.getvalue())
-        self.assertTrue(Persona.objects.filter(display_name="Einstein").exists())
+        self.assertTrue(Persona.objects.filter(display_name="Albert Einstein").exists())
+        self.assertTrue(get_user_model().objects.filter(username="albert-einstein").exists())
+        self.assertFalse(get_user_model().objects.filter(username__startswith="demo_").exists())
 
     def test_seeded_director_account_can_log_in_and_is_shown_on_login_page(self):
         management.call_command("seed_demo", stdout=StringIO())

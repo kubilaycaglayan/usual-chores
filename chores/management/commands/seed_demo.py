@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+from django.utils.text import slugify
 
 from chores.models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
 from chores.demo_credentials import (
@@ -14,13 +15,13 @@ from chores.demo_credentials import (
 
 
 HOUSEHOLDS = {
-    "scientists-house": ("Scientists House", ["Einstein", "Marie Curie", "Newton", "Tesla", "Darwin", "Feynman", "Galileo", "Kepler"], [
+    "scientists-house": ("Scientists House", ["Albert Einstein", "Marie Curie", "Isaac Newton", "Nikola Tesla", "Charles Darwin", "Richard Feynman", "Galileo Galilei", "Johannes Kepler"], [
         "Clean the laboratory", "Organize experiment notes", "Wash the glassware", "Restock chalk", "Take out radioactive waste", "Prepare coffee for the morning discussion", "Calibrate the telescope", "Sort the journals", "Water the greenhouse", "Check the safety equipment",
     ]),
     "movie-directors-house": ("Movie Directors House", ["Bong Joon Ho", "Alberto Rodríguez", "David Fincher", "Tobias Lindholm", "Park Chan-wook", "Denis Villeneuve", "Na Hong-jin", "Grant Singer", "Guillaume Canet"], [
         "Shoot Memories of Murder scene", "Shoot Marshland scene", "Edit the film footage", "Shoot The Game"
     ]),
-    "writers-house": ("Writers House", ["Dostoevsky", "Virginia Woolf", "Kafka", "Orwell", "Tolstoy", "Hemingway"], [
+    "writers-house": ("Writers House", ["Fyodor Dostoevsky", "Virginia Woolf", "Franz Kafka", "George Orwell", "Leo Tolstoy", "Ernest Hemingway"], [
         "Organize the library", "Make coffee", "Clean writing desks", "Water the plants", "Buy printer paper", "Take out recycling", "Sharpen the pencils", "File the manuscripts", "Air the reading room", "Check the dictionaries",
     ]),
     "computer-scientists-house": ("Computer Scientists House", ["Alan Turing", "Ada Lovelace", "Donald Knuth", "Grace Hopper", "Edsger Dijkstra", "Margaret Hamilton"], [
@@ -44,7 +45,12 @@ class Command(BaseCommand):
             legacy_user.username = DEMO_LOGIN_USERNAME
             legacy_user.save(update_fields=("username",))
         for slug, (name, people, chore_names) in HOUSEHOLDS.items():
-            creator, _ = User.objects.get_or_create(username=f"demo_{slug}", defaults={"email": f"{slug}@example.com"})
+            creator_username = (
+                DEMO_LOGIN_USERNAME
+                if people[0] == "Bong Joon Ho"
+                else slugify(people[0])
+            )
+            creator, _ = User.objects.get_or_create(username=creator_username, defaults={"email": f"{creator_username}@example.com"})
             creator.set_unusable_password()
             creator.save(update_fields=("password",))
             household, _ = Household.objects.update_or_create(slug=slug, defaults={"name": name, "created_by": creator, "is_public": True})
@@ -52,7 +58,7 @@ class Command(BaseCommand):
                 username = (
                     DEMO_LOGIN_USERNAME
                     if display_name == "Bong Joon Ho"
-                    else f"demo_{slug}_{index + 1}"
+                    else slugify(display_name)
                 )
                 user, _ = User.objects.get_or_create(username=username, defaults={"email": f"{username}@example.com"})
                 if username == DEMO_LOGIN_USERNAME:
