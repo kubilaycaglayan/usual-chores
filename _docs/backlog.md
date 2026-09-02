@@ -70,36 +70,36 @@ part of the initial MVP.
 Provide login and logout pages so users can use the authenticated chore actions
 without relying on the Django admin.
 
-### task-12 — Add households and membership
+### task-12 — Add households and membership ✅
 
 Allow users to create and join public, discoverable households with a maximum
 of ten members.
 
-### task-13 — Add household personas and seed data
+### task-13 — Add household personas and seed data ✅
 
 Support seeded themed households and famous-person personas alongside real
 users.
 
-### task-14 — Add claim-based chore statuses
+### task-14 — Add claim-based chore statuses ✅
 
 Implement Open → Claimed → Done states, one claimant at a time, and household
 member access to create and edit chores.
 
-### task-15 — Add chore claiming and unclaiming
+### task-15 — Add chore claiming and unclaiming ✅
 
 Allow members to claim chores and unclaim them only before the deadline.
 
-### task-16 — Add deadline alerts
+### task-16 — Add deadline alerts ✅
 
 Highlight overdue chores and show page alerts for claimed chores approaching or
 past their deadline.
 
-### task-17 — Add contribution statistics
+### task-17 — Add contribution statistics ✅
 
 Show each member’s completed-chore count and transparently recommend chores to
 members with lower contributions.
 
-### task-18 — Add deterministic themed demo data
+### task-18 — Add deterministic themed demo data ✅
 
 After the household, claiming, and statistics features are available, add
 idempotent deterministic seed data for themed public households, persona

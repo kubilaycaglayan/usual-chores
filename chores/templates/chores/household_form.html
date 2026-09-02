@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Create household · Usual Chores{% endblock %}
+{% block content %}<p><a href="{% url 'chores:households' %}">← All households</a></p><h1>Create household</h1><form method="post" class="form-card">{% csrf_token %}{{ form.as_p }}<button type="submit">Create household</button></form>{% endblock %}

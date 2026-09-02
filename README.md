@@ -4,10 +4,10 @@ Usual Chores is a simple tool for organizing recurring household tasks.
 
 ## Status
 
-The MVP is implemented with Django. It supports one-off and recurring chores,
-due dates, assignment, ownership-aware editing, completion history, and a simple
-responsive web interface. See [_docs/backlog.md](_docs/backlog.md) for the
-completed implementation backlog.
+The application supports public households, seeded personas, member-managed
+chores, open/claimed/done statuses, recurring occurrences, completion history,
+contribution statistics, and fairness recommendations. See
+[_docs/backlog.md](_docs/backlog.md) for the implementation backlog.
 
 ## How to run
 
@@ -21,6 +21,7 @@ Install the dependencies and initialize the database:
 ```bash
 uv sync
 uv run python manage.py migrate
+uv run python manage.py seed_demo
 ```
 
 The database migration automatically creates the development admin account so
@@ -45,6 +46,9 @@ uv run python manage.py runserver
 Open <http://127.0.0.1:8000/> to view chores. The available pages are:
 
 - `/` — upcoming incomplete chores
+- `/households/` — discover public households
+- `/households/new/` — create a household (requires authentication)
+- `/households/<slug>/` — members, chores, alerts, statistics, and recommendations
 - `/new/` — create a chore (requires authentication)
 - `/accounts/login/` — sign in to the application
 - `/accounts/logout/` — sign out of the application
@@ -59,3 +63,6 @@ Run the Django system checks and automated tests with:
 uv run python manage.py check
 uv run python manage.py test
 ```
+
+`seed_demo` is deterministic and idempotent; run it again whenever you want to
+restore the four themed development households without creating duplicates.

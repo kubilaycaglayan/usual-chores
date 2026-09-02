@@ -7,6 +7,44 @@ from django.db import models, transaction
 from django.utils import timezone
 
 
+class Household(models.Model):
+    name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="created_households")
+    is_public = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def add_member(self, user):
+        if not self.memberships.filter(user=user).exists() and self.memberships.count() >= 10:
+            raise ValidationError("A household can have at most 10 members.")
+        return HouseholdMembership.objects.get_or_create(household=self, user=user)
+
+
+class Persona(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="persona")
+    display_name = models.CharField(max_length=120)
+    theme = models.CharField(max_length=120)
+    seeded = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.display_name
+
+
+class HouseholdMembership(models.Model):
+    household = models.ForeignKey(Household, on_delete=models.CASCADE, related_name="memberships")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="household_memberships")
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=("household", "user"), name="unique_household_member")]
+
+
 class Chore(models.Model):
     class Recurrence(models.TextChoices):
         NONE = "none", "One-off"
@@ -38,6 +76,8 @@ class Chore(models.Model):
         null=True,
         blank=True,
     )
+    household = models.ForeignKey(Household, on_delete=models.CASCADE, related_name="chores", null=True, blank=True)
+    claimed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="claimed_chores", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -52,6 +92,18 @@ class Chore(models.Model):
             raise ValidationError("Completed chores must have a completion time.")
         if not self.is_completed and self.completed_at is not None:
             raise ValidationError("Incomplete chores cannot have a completion time.")
+        if self.claimed_by and self.household and not self.household.memberships.filter(user=self.claimed_by).exists():
+            raise ValidationError("Only household members can claim its chores.")
+
+    @property
+    def status(self):
+        if self.is_completed:
+            return "Done"
+        return "Claimed" if self.claimed_by_id else "Open"
+
+    @property
+    def is_overdue(self):
+        return bool(self.due_date and self.due_date < timezone.now() and not self.is_completed)
 
     def mark_complete(self):
         if not self.is_completed:
@@ -83,6 +135,7 @@ class Chore(models.Model):
                 due_date=next_due,
                 created_by=self.created_by,
                 assigned_to=self.assigned_to,
+                household=self.household,
             )
 
     def next_due_date(self):
@@ -116,3 +169,7 @@ class CompletionHistory(models.Model):
 
     def __str__(self):
         return f"{self.chore} completed at {self.completed_at:%Y-%m-%d %H:%M}"
+
+    @property
+    def member_name(self):
+        return self.completed_by.get_full_name() or self.completed_by.username if self.completed_by else "Unknown"

@@ -1,0 +1,64 @@
+from datetime import datetime, timedelta
+
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
+
+from chores.models import Chore, CompletionHistory, Household, HouseholdMembership, Persona
+
+
+HOUSEHOLDS = {
+    "scientists-house": ("Scientists House", ["Einstein", "Marie Curie", "Newton", "Tesla", "Darwin", "Feynman"], [
+        "Clean the laboratory", "Organize experiment notes", "Wash the glassware", "Restock chalk", "Take out radioactive waste", "Prepare coffee for the morning discussion", "Calibrate the telescope", "Sort the journals", "Water the greenhouse", "Check the safety equipment",
+    ]),
+    "movie-directors-house": ("Movie Directors House", ["Kubrick", "Spielberg", "Scorsese", "Tarantino", "Coppola", "Hitchcock"], [
+        "Organize the screening room", "Clean camera equipment", "Prepare movie-night snacks", "Sort the Blu-ray collection", "Take out trash after screening", "Vacuum the editing room", "Label the film reels", "Charge the microphones", "Dust the storyboards", "Book the projector repair",
+    ]),
+    "writers-house": ("Writers House", ["Dostoevsky", "Virginia Woolf", "Kafka", "Orwell", "Tolstoy", "Hemingway"], [
+        "Organize the library", "Make coffee", "Clean writing desks", "Water the plants", "Buy printer paper", "Take out recycling", "Sharpen the pencils", "File the manuscripts", "Air the reading room", "Check the dictionaries",
+    ]),
+    "computer-scientists-house": ("Computer Scientists House", ["Alan Turing", "Ada Lovelace", "Donald Knuth", "Grace Hopper", "Edsger Dijkstra", "Margaret Hamilton"], [
+        "Restart the router", "Organize cables", "Clean keyboards", "Back up the household server", "Empty the coffee machine", "Update the shared shopping list", "Patch the home lab", "Label the spare hardware", "Review the backups", "Recycle old batteries",
+    ]),
+}
+
+
+class Command(BaseCommand):
+    help = "Create deterministic, idempotent themed households for development."
+
+    @transaction.atomic
+    def handle(self, *args, **options):
+        User = get_user_model()
+        base_time = timezone.make_aware(datetime(2026, 1, 15, 12, 0))
+        created = 0
+        for slug, (name, people, chore_names) in HOUSEHOLDS.items():
+            creator, _ = User.objects.get_or_create(username=f"demo_{slug}", defaults={"email": f"{slug}@example.com"})
+            creator.set_unusable_password()
+            creator.save(update_fields=("password",))
+            household, _ = Household.objects.update_or_create(slug=slug, defaults={"name": name, "created_by": creator, "is_public": True})
+            for index, display_name in enumerate(people):
+                username = f"demo_{slug}_{index + 1}"
+                user, _ = User.objects.get_or_create(username=username, defaults={"email": f"{username}@example.com"})
+                user.set_unusable_password()
+                user.save(update_fields=("password",))
+                Persona.objects.update_or_create(user=user, defaults={"display_name": display_name, "theme": name, "seeded": True})
+                HouseholdMembership.objects.get_or_create(household=household, user=user)
+            members = list(household.memberships.order_by("user_id").values_list("user_id", flat=True))
+            for index, chore_name in enumerate(chore_names):
+                recurrence = Chore.Recurrence.WEEKLY if index == 0 else Chore.Recurrence.DAILY if index == 1 else Chore.Recurrence.NONE
+                due_date = base_time + timedelta(days=index - 6)
+                is_completed = index in (2, 3)
+                chore, made = Chore.objects.update_or_create(
+                    household=household, name=chore_name,
+                    defaults={"description": f"A {name} household task.", "recurrence": recurrence, "due_date": due_date, "is_completed": is_completed, "completed_at": base_time - timedelta(days=index + 1) if is_completed else None, "created_by_id": members[0], "claimed_by_id": members[1] if index == 4 else None},
+                )
+                created += int(made)
+                if is_completed:
+                    for history_index in range(1 if index == 2 else 3):
+                        completed_by = members[(index + history_index) % len(members)]
+                        CompletionHistory.objects.get_or_create(chore=chore, completed_by_id=completed_by, completed_at=base_time - timedelta(days=index + history_index + 1))
+            # A prior completed occurrence demonstrates recurring history without changing the open seed occurrence.
+            prior, _ = Chore.objects.get_or_create(household=household, name=f"Previous {chore_names[0]}", defaults={"recurrence": Chore.Recurrence.WEEKLY, "due_date": base_time - timedelta(days=14), "is_completed": True, "completed_at": base_time - timedelta(days=7), "created_by_id": members[0]})
+            CompletionHistory.objects.get_or_create(chore=prior, completed_by_id=members[2], completed_at=base_time - timedelta(days=7))
+        self.stdout.write(self.style.SUCCESS(f"Seeded {len(HOUSEHOLDS)} households ({created} new chores)."))
